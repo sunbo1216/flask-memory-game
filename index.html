@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我可以倒着记</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --text: #18202f;
+      --muted: #5d6a7d;
+      --primary: #1559c7;
+      --primary-dark: #0d3d92;
+      --success: #167346;
+      --danger: #b42318;
+      --warning: #9a5b00;
+      --border: #c9d4e5;
+      --soft-blue: #edf4ff;
+      --soft-green: #eaf7f0;
+      --soft-yellow: #fff7e6;
+      --shadow: 0 14px 32px rgba(24, 32, 47, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      font-size: 20px;
+      line-height: 1.6;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      min-height: 60px;
+      border: 0;
+      border-radius: 10px;
+      padding: 14px 28px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      background: #98a5b8;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    input {
+      width: 100%;
+      min-height: 62px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      background: #fff;
+      color: var(--text);
+      font-size: 24px;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      outline: 4px solid rgba(21, 89, 199, 0.18);
+    }
+
+    .app {
+      min-height: 100vh;
+      padding: 28px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .view {
+      display: none;
+      width: min(980px, 100%);
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .auth-card,
+    .main-card {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      padding: 34px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .auth-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .auth-form {
+      width: min(440px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    h1,
+    h2 {
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    h1 {
+      font-size: 42px;
+    }
+
+    h2 {
+      font-size: 34px;
+    }
+
+    .subtitle,
+    .hint {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      margin-top: 22px;
+    }
+
+    .button-row button {
+      min-width: 160px;
+    }
+
+    .secondary {
+      background: #e7edf8;
+      color: var(--primary-dark);
+      border: 2px solid #b8c9ea;
+    }
+
+    .secondary:hover {
+      background: #d7e3f7;
+    }
+
+    .danger {
+      background: var(--danger);
+    }
+
+    .danger:hover {
+      background: #8e1c13;
+    }
+
+    .success-btn {
+      background: var(--success);
+    }
+
+    .success-btn:hover {
+      background: #105534;
+    }
+
+    .stats-grid,
+    .report-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .report-summary {
+      grid-template-columns: repeat(3, minmax(160px, 1fr));
+    }
+
+    .stat {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #f9fbff;
+      text-align: center;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 30px;
+      color: var(--primary-dark);
+    }
+
+    .mode-box {
+      margin: 24px 0;
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--soft-blue);
+    }
+
+    .mode-box h2 {
+      margin-bottom: 10px;
+      font-size: 28px;
+      color: var(--primary-dark);
+    }
+
+    .mode-box p {
+      margin: 8px 0;
+      color: var(--muted);
+    }
+
+    .rule-list {
+      margin: 14px 0 0;
+      padding-left: 26px;
+      color: var(--muted);
+    }
+
+    .rule-list li {
+      margin: 4px 0;
+    }
+
+    .game-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      text-align: center;
+    }
+
+    .level-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 180px;
+      min-height: 56px;
+      padding: 8px 20px;
+      border-radius: 999px;
+      background: #e7f5ee;
+      color: var(--success);
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .number-box {
+      width: min(540px, 100%);
+      min-height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid var(--primary);
+      border-radius: 12px;
+      background: #f7faff;
+      color: var(--primary-dark);
+      font-size: 64px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      padding: 18px;
+      word-break: break-all;
+    }
+
+    .answer-area {
+      width: min(540px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      min-height: 34px;
+      margin: 12px 0 0;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .message.ok {
+      color: var(--success);
+    }
+
+    .message.bad {
+      color: var(--danger);
+    }
+
+    .message.warn {
+      color: var(--warning);
+    }
+
+    .rest-box {
+      display: none;
+      margin-top: 24px;
+      padding: 24px;
+      border: 2px solid #f1cc75;
+      border-radius: 12px;
+      background: var(--soft-yellow);
+      text-align: center;
+    }
+
+    .rest-box.active {
+      display: block;
+    }
+
+    .rest-box h2 {
+      color: var(--warning);
+      margin-bottom: 10px;
+    }
+
+    .detail-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .detail-item {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fbfcff;
+    }
+
+    .detail-item strong {
+      color: var(--primary-dark);
+    }
+
+    .correct {
+      color: var(--success);
+      font-weight: 800;
+    }
+
+    .wrong {
+      color: var(--danger);
+      font-weight: 800;
+    }
+
+    .screen-reader-label {
+      display: block;
+      margin-bottom: 6px;
+      text-align: left;
+      font-weight: 800;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        font-size: 18px;
+      }
+
+      .auth-card,
+      .main-card {
+        padding: 24px 18px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      h2 {
+        font-size: 28px;
+      }
+
+      .top-row {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+
+      .stats-grid,
+      .report-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .number-box {
+        min-height: 130px;
+        font-size: 48px;
+        letter-spacing: 5px;
+      }
+
+      .button-row button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section id="loginView" class="view active">
+      <div class="auth-card">
+        <h1>我可以倒着记</h1>
+        <p class="subtitle">请先登录，再开始数字倒序记忆训练。</p>
+        <form id="loginForm" class="auth-form">
+          <div>
+            <label class="screen-reader-label" for="loginUsername">用户名</label>
+            <input id="loginUsername" autocomplete="username" placeholder="请输入用户名" required>
+          </div>
+          <div>
+            <label class="screen-reader-label" for="loginPassword">密码</label>
+            <input id="loginPassword" type="password" autocomplete="current-password" placeholder="请输入密码" required>
+          </div>
+          <button type="submit">登录</button>
+        </form>
+        <button class="secondary" type="button" data-target="registerView">没有账号，去注册</button>
+        <p id="loginMessage" class="message"></p>
+      </div>
+    </section>
+
+    <section id="registerView" class="view">
+      <div class="auth-card">
+        <h1>创建训练账号</h1>
+        <p class="subtitle">注册后即可保存训练进度和报告。</p>
+        <form id="registerForm" class="auth-form">
+          <div>
+            <label class="screen-reader-label" for="registerUsername">用户名</label>
+            <input id="registerUsername" autocomplete="username" placeholder="请输入用户名" required>
+          </div>
+          <div>
+            <label class="screen-reader-label" for="registerPassword">密码</label>
+            <input id="registerPassword" type="password" autocomplete="new-password" placeholder="请输入密码" required>
+          </div>
+          <button type="submit">注册</button>
+        </form>
+        <button class="secondary" type="button" data-target="loginView">已有账号，返回登录</button>
+        <p id="registerMessage" class="message"></p>
+      </div>
+    </section>
+
+    <section id="startView" class="view">
+      <div class="main-card">
+        <div class="top-row">
+          <div>
+            <h1>我可以倒着记</h1>
+            <p id="welcomeText" class="subtitle">欢迎回来</p>
+          </div>
+          <button id="logoutBtn" class="secondary" type="button">退出登录</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat"><span>当前难度</span><strong id="homeCurrentLevel">2位</strong></div>
+          <div class="stat"><span>最高记录</span><strong id="homeMaxLevel">2位</strong></div>
+          <div class="stat"><span>总作答</span><strong id="homeTotalCount">0</strong></div>
+          <div class="stat"><span>正确次数</span><strong id="homeCorrectCount">0</strong></div>
+        </div>
+
+        <div class="mode-box">
+          <h2>自适应巩固训练</h2>
+          <p>系统会自动调整数字长度，不需要手动选择难度。</p>
+          <ul class="rule-list">
+            <li>连续答对 2 次，难度自动增加。</li>
+            <li>连续答错 2 次，难度自动降低。</li>
+            <li>最低 2 位数字，最高 6 位数字。</li>
+            <li>达到 6 位后继续巩固训练，不会变得过难。</li>
+            <li>每完成 10 题，会提醒休息一下。</li>
+          </ul>
+        </div>
+
+        <p class="hint">系统会先显示数字，数字隐藏后，请把它倒着输入。训练过程中可以随时暂停或生成报告。</p>
+
+        <div class="button-row">
+          <button id="startGameBtn" type="button">开始训练</button>
+          <button id="latestReportBtn" class="secondary" type="button">查看最近报告</button>
+        </div>
+
+        <p id="startMessage" class="message"></p>
+      </div>
+    </section>
+
+    <section id="gameView" class="view">
+      <div class="main-card">
+        <div class="top-row">
+          <div>
+            <h2>数字倒序训练</h2>
+            <p id="sessionText" class="subtitle">本次训练会话</p>
+          </div>
+          <div class="level-badge" id="levelBadge">当前难度：2位</div>
+        </div>
+
+        <div class="game-stage">
+          <div id="numberBox" class="number-box">准备</div>
+          <p id="phaseText" class="hint">请观察数字，隐藏后再输入。</p>
+
+          <div class="answer-area">
+            <label class="screen-reader-label" for="answerInput">倒序答案</label>
+            <input id="answerInput" inputmode="numeric" pattern="[0-9]*" placeholder="数字隐藏后在这里输入" disabled>
+            <button id="submitAnswerBtn" type="button" disabled>提交答案</button>
+          </div>
+
+          <div class="button-row">
+            <button id="pauseBtn" class="secondary" type="button">暂停</button>
+            <button id="finishGameBtn" class="success-btn" type="button">生成报告</button>
+            <button id="exitGameBtn" class="danger" type="button">退出训练</button>
+          </div>
+
+          <p id="gameMessage" class="message"></p>
+
+          <div id="restBox" class="rest-box">
+            <h2>可以休息一下</h2>
+            <p>您已经完成一组训练。可以继续训练，也可以先查看报告。</p>
+            <div class="button-row">
+              <button id="continueAfterRestBtn" type="button">继续训练</button>
+              <button id="reportAfterRestBtn" class="success-btn" type="button">查看报告</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reportView" class="view">
+      <div class="main-card">
+        <div class="top-row">
+          <div>
+            <h1>训练报告</h1>
+            <p id="reportSessionText" class="subtitle">本次训练结果</p>
+          </div>
+          <button id="backHomeBtn" class="secondary" type="button">返回开始界面</button>
+        </div>
+
+        <div class="report-summary">
+          <div class="stat"><span>总作答次数</span><strong id="reportTotal">0</strong></div>
+          <div class="stat"><span>正确次数</span><strong id="reportCorrect">0</strong></div>
+          <div class="stat"><span>错误次数</span><strong id="reportWrong">0</strong></div>
+          <div class="stat"><span>准确率</span><strong id="reportAccuracy">0%</strong></div>
+          <div class="stat"><span>最高训练长度</span><strong id="reportMaxLevel">2位</strong></div>
+          <div class="stat"><span>平均用时</span><strong id="reportAvgTime">0秒</strong></div>
+        </div>
+
+        <p id="reportAdvice" class="hint"></p>
+        <h2 style="margin-top: 26px;">答题明细</h2>
+        <div id="recordDetails" class="detail-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:5000";
+
+    const MIN_DIGIT_LENGTH = 2;
+    const MAX_DIGIT_LENGTH = 6;
+    const CORRECT_STREAK_TO_LEVEL_UP = 2;
+    const WRONG_STREAK_TO_LEVEL_DOWN = 2;
+    const REST_REMINDER_COUNT = 10;
+
+    const els = {
+      loginView: document.getElementById("loginView"),
+      registerView: document.getElementById("registerView"),
+      startView: document.getElementById("startView"),
+      gameView: document.getElementById("gameView"),
+      reportView: document.getElementById("reportView"),
+      loginForm: document.getElementById("loginForm"),
+      registerForm: document.getElementById("registerForm"),
+      loginMessage: document.getElementById("loginMessage"),
+      registerMessage: document.getElementById("registerMessage"),
+      startMessage: document.getElementById("startMessage"),
+      gameMessage: document.getElementById("gameMessage"),
+      welcomeText: document.getElementById("welcomeText"),
+      homeCurrentLevel: document.getElementById("homeCurrentLevel"),
+      homeMaxLevel: document.getElementById("homeMaxLevel"),
+      homeTotalCount: document.getElementById("homeTotalCount"),
+      homeCorrectCount: document.getElementById("homeCorrectCount"),
+      startGameBtn: document.getElementById("startGameBtn"),
+      latestReportBtn: document.getElementById("latestReportBtn"),
+      logoutBtn: document.getElementById("logoutBtn"),
+      sessionText: document.getElementById("sessionText"),
+      levelBadge: document.getElementById("levelBadge"),
+      numberBox: document.getElementById("numberBox"),
+      phaseText: document.getElementById("phaseText"),
+      answerInput: document.getElementById("answerInput"),
+      submitAnswerBtn: document.getElementById("submitAnswerBtn"),
+      pauseBtn: document.getElementById("pauseBtn"),
+      finishGameBtn: document.getElementById("finishGameBtn"),
+      exitGameBtn: document.getElementById("exitGameBtn"),
+      restBox: document.getElementById("restBox"),
+      continueAfterRestBtn: document.getElementById("continueAfterRestBtn"),
+      reportAfterRestBtn: document.getElementById("reportAfterRestBtn"),
+      reportSessionText: document.getElementById("reportSessionText"),
+      reportTotal: document.getElementById("reportTotal"),
+      reportCorrect: document.getElementById("reportCorrect"),
+      reportWrong: document.getElementById("reportWrong"),
+      reportAccuracy: document.getElementById("reportAccuracy"),
+      reportMaxLevel: document.getElementById("reportMaxLevel"),
+      reportAvgTime: document.getElementById("reportAvgTime"),
+      reportAdvice: document.getElementById("reportAdvice"),
+      recordDetails: document.getElementById("recordDetails"),
+      backHomeBtn: document.getElementById("backHomeBtn")
+    };
+
+    let gameState = {
+      sessionId: null,
+      digitLength: MIN_DIGIT_LENGTH,
+      numberText: "",
+      correctAnswer: "",
+      phase: "idle",
+      isPaused: false,
+      isWaitingRestChoice: false,
+      correctStreak: 0,
+      wrongStreak: 0,
+      displayTimer: null,
+      nextRoundTimer: null,
+      displayStartedAt: 0,
+      displayRemaining: 0,
+      answerStartedAt: 0,
+      answerElapsedBeforePause: 0
+    };
+
+    function showView(viewId) {
+      [els.loginView, els.registerView, els.startView, els.gameView, els.reportView]
+        .forEach(view => view.classList.remove("active"));
+      document.getElementById(viewId).classList.add("active");
+    }
+
+    function setMessage(element, text, type) {
+      element.textContent = text || "";
+      element.className = "message" + (type ? " " + type : "");
+    }
+
+    function saveJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function readJson(key) {
+      try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : null;
+      } catch (err) {
+        localStorage.removeItem(key);
+        return null;
+      }
+    }
+
+    function formatNow() {
+      const pad = value => String(value).padStart(2, "0");
+      const date = new Date();
+      return [
+        date.getFullYear(),
+        pad(date.getMonth() + 1),
+        pad(date.getDate())
+      ].join("-") + " " + [
+        pad(date.getHours()),
+        pad(date.getMinutes()),
+        pad(date.getSeconds())
+      ].join(":");
+    }
+
+    async function apiFetch(path, options = {}) {
+      const headers = Object.assign({"Content-Type": "application/json"}, options.headers || {});
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        headers.Authorization = "Bearer " + token;
+      }
+
+      const response = await fetch(API_BASE + path, Object.assign({}, options, {headers}));
+      const result = await response.json().catch(() => ({
+        code: response.status,
+        message: "服务器返回格式错误",
+        data: null
+      }));
+
+      if (!response.ok || result.code >= 400) {
+        throw new Error(result.message || "请求失败");
+      }
+
+      return result.data;
+    }
+
+    function defaultProgress() {
+      return {
+        currentLevel: MIN_DIGIT_LENGTH,
+        maxLevel: MIN_DIGIT_LENGTH,
+        totalCount: 0,
+        correctCount: 0,
+        lastUpdateTime: formatNow()
+      };
+    }
+
+    function normalizeProgress(progress) {
+      const safeProgress = progress || defaultProgress();
+
+      safeProgress.currentLevel = clampDigitLength(Number(safeProgress.currentLevel) || MIN_DIGIT_LENGTH);
+      safeProgress.maxLevel = clampDigitLength(Number(safeProgress.maxLevel) || MIN_DIGIT_LENGTH);
+      safeProgress.totalCount = Number(safeProgress.totalCount || 0);
+      safeProgress.correctCount = Number(safeProgress.correctCount || 0);
+      safeProgress.lastUpdateTime = safeProgress.lastUpdateTime || formatNow();
+
+      return safeProgress;
+    }
+
+    async function loadProgress() {
+      const localProgress = normalizeProgress(readJson("gameProgress"));
+
+      if (localProgress) {
+        saveJson("gameProgress", localProgress);
+        renderHome(localProgress);
+        return localProgress;
+      }
+
+      const cloudProgress = normalizeProgress(await apiFetch("/api/game/progress"));
+      saveJson("gameProgress", cloudProgress);
+      renderHome(cloudProgress);
+      return cloudProgress;
+    }
+
+    function renderHome(progress) {
+      const safeProgress = normalizeProgress(progress);
+      const userInfo = readJson("userInfo");
+
+      els.welcomeText.textContent = userInfo ? "欢迎回来，" + userInfo.username : "欢迎回来";
+      els.homeCurrentLevel.textContent = safeProgress.currentLevel + "位";
+      els.homeMaxLevel.textContent = safeProgress.maxLevel + "位";
+      els.homeTotalCount.textContent = safeProgress.totalCount;
+      els.homeCorrectCount.textContent = safeProgress.correctCount;
+    }
+
+    async function enterStartView() {
+      clearGameTimers();
+      hideRestBox();
+      setMessage(els.startMessage, "", "");
+      showView("startView");
+
+      try {
+        await loadProgress();
+      } catch (err) {
+        const progress = normalizeProgress(readJson("gameProgress") || defaultProgress());
+        saveJson("gameProgress", progress);
+        renderHome(progress);
+        setMessage(els.startMessage, "暂时无法读取云端进度，已使用本地缓存。", "warn");
+      }
+    }
+
+    async function checkLoginOnLoad() {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        showView("loginView");
+        return;
+      }
+
+      try {
+        const user = await apiFetch("/api/auth/me", {method: "GET"});
+        saveJson("userInfo", user);
+        await enterStartView();
+      } catch (err) {
+        logout(false);
+        setMessage(els.loginMessage, "登录状态已失效，请重新登录。", "warn");
+      }
+    }
+
+    function logout(showLoginMessage = true) {
+      clearGameTimers();
+      hideRestBox();
+      localStorage.removeItem("token");
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("gameProgress");
+      localStorage.removeItem("currentSession");
+      localStorage.removeItem("lastReport");
+      showView("loginView");
+
+      if (showLoginMessage) {
+        setMessage(els.loginMessage, "已退出登录。", "ok");
+      }
+    }
+
+    function clampDigitLength(value) {
+      return Math.min(MAX_DIGIT_LENGTH, Math.max(MIN_DIGIT_LENGTH, Number(value) || MIN_DIGIT_LENGTH));
+    }
+
+    function getDifficultyName(digitLength) {
+      if (digitLength <= 2) return "入门";
+      if (digitLength === 3) return "轻松";
+      if (digitLength === 4) return "标准";
+      if (digitLength === 5) return "提高";
+      return "巩固";
+    }
+
+    function generateNumber(digitLength) {
+      const length = clampDigitLength(digitLength);
+      let text = String(Math.floor(Math.random() * 9) + 1);
+
+      while (text.length < length) {
+        text += String(Math.floor(Math.random() * 10));
+      }
+
+      return text;
+    }
+
+    function clearGameTimers() {
+      if (gameState.displayTimer) {
+        clearTimeout(gameState.displayTimer);
+        gameState.displayTimer = null;
+      }
+
+      if (gameState.nextRoundTimer) {
+        clearTimeout(gameState.nextRoundTimer);
+        gameState.nextRoundTimer = null;
+      }
+    }
+
+    function setCurrentSession(patch) {
+      const session = Object.assign(readJson("currentSession") || {}, patch);
+      saveJson("currentSession", session);
+      return session;
+    }
+
+    function getSessionAnsweredCount() {
+      const session = readJson("currentSession");
+      return session && session.records ? session.records.length : 0;
+    }
+
+    function startTraining() {
+      clearGameTimers();
+      hideRestBox();
+
+      const progress = normalizeProgress(readJson("gameProgress") || defaultProgress());
+      const sessionId = "session_" + Date.now();
+
+      const currentSession = {
+        sessionId,
+        isPaused: false,
+        startTime: formatNow(),
+        records: []
+      };
+
+      saveJson("currentSession", currentSession);
+
+      gameState.sessionId = sessionId;
+      gameState.digitLength = clampDigitLength(progress.currentLevel);
+      gameState.correctStreak = 0;
+      gameState.wrongStreak = 0;
+      gameState.isPaused = false;
+      gameState.isWaitingRestChoice = false;
+
+      els.sessionText.textContent = "sessionId：" + sessionId;
+      els.pauseBtn.textContent = "暂停";
+      setMessage(els.gameMessage, "", "");
+      showView("gameView");
+
+      startRound();
+    }
+
+    function startRound() {
+      clearGameTimers();
+      hideRestBox();
+
+      gameState.digitLength = clampDigitLength(gameState.digitLength);
+      gameState.numberText = generateNumber(gameState.digitLength);
+      gameState.correctAnswer = gameState.numberText.split("").reverse().join("");
+      gameState.phase = "showing";
+      gameState.isPaused = false;
+      gameState.isWaitingRestChoice = false;
+      gameState.displayRemaining = 2600 + gameState.digitLength * 500;
+      gameState.displayStartedAt = performance.now();
+      gameState.answerElapsedBeforePause = 0;
+
+      els.levelBadge.textContent = "当前难度：" + getDifficultyName(gameState.digitLength) + "（" + gameState.digitLength + "位）";
+      els.numberBox.textContent = gameState.numberText;
+      els.phaseText.textContent = "请认真观察数字，数字隐藏后再输入。";
+      els.answerInput.value = "";
+      els.answerInput.disabled = true;
+      els.submitAnswerBtn.disabled = true;
+      els.pauseBtn.textContent = "暂停";
+
+      setMessage(els.gameMessage, "当前为数字展示阶段，请先观察。", "warn");
+      setCurrentSession({isPaused: false});
+
+      gameState.displayTimer = setTimeout(enterAnswerPhase, gameState.displayRemaining);
+    }
+
+    function enterAnswerPhase() {
+      if (gameState.isPaused || gameState.isWaitingRestChoice) {
+        return;
+      }
+
+      clearGameTimers();
+
+      gameState.phase = "answering";
+      gameState.answerStartedAt = performance.now();
+
+      els.numberBox.textContent = "请作答";
+      els.phaseText.textContent = "请把刚才看到的数字倒着输入。";
+      els.answerInput.disabled = false;
+      els.submitAnswerBtn.disabled = false;
+      els.answerInput.focus();
+
+      setMessage(els.gameMessage, "现在可以输入答案。", "ok");
+    }
+
+    function togglePause() {
+      if (gameState.isWaitingRestChoice) {
+        return;
+      }
+
+      if (gameState.phase !== "showing" && gameState.phase !== "answering") {
+        return;
+      }
+
+      if (!gameState.isPaused) {
+        gameState.isPaused = true;
+
+        if (gameState.phase === "showing") {
+          clearGameTimers();
+          gameState.displayRemaining = Math.max(
+            0,
+            gameState.displayRemaining - (performance.now() - gameState.displayStartedAt)
+          );
+        } else {
+          gameState.answerElapsedBeforePause += performance.now() - gameState.answerStartedAt;
+        }
+
+        els.answerInput.disabled = true;
+        els.submitAnswerBtn.disabled = true;
+        els.pauseBtn.textContent = "继续";
+        setCurrentSession({isPaused: true});
+        setMessage(els.gameMessage, "训练已暂停，您可以休息，也可以生成报告。", "warn");
+        return;
+      }
+
+      gameState.isPaused = false;
+      els.pauseBtn.textContent = "暂停";
+      setCurrentSession({isPaused: false});
+
+      if (gameState.phase === "showing") {
+        gameState.displayStartedAt = performance.now();
+        gameState.displayTimer = setTimeout(enterAnswerPhase, gameState.displayRemaining);
+        setMessage(els.gameMessage, "已继续，请观察数字。", "ok");
+      } else {
+        gameState.answerStartedAt = performance.now();
+        els.answerInput.disabled = false;
+        els.submitAnswerBtn.disabled = false;
+        els.answerInput.focus();
+        setMessage(els.gameMessage, "已继续，请输入答案。", "ok");
+      }
+    }
+
+    function updateAdaptiveDifficulty(isCorrect) {
+      const oldLength = gameState.digitLength;
+
+      if (isCorrect) {
+        gameState.correctStreak += 1;
+        gameState.wrongStreak = 0;
+
+        if (gameState.correctStreak >= CORRECT_STREAK_TO_LEVEL_UP) {
+          gameState.correctStreak = 0;
+
+          if (gameState.digitLength < MAX_DIGIT_LENGTH) {
+            gameState.digitLength += 1;
+            return {
+              changed: true,
+              message: "连续答对，难度提升到 " + gameState.digitLength + " 位。"
+            };
+          }
+
+          return {
+            changed: false,
+            message: "表现很好，继续进行 6 位巩固训练。"
+          };
+        }
+
+        return {
+          changed: false,
+          message: "回答正确，再答对一次会提升难度。"
+        };
+      }
+
+      gameState.wrongStreak += 1;
+      gameState.correctStreak = 0;
+
+      if (gameState.wrongStreak >= WRONG_STREAK_TO_LEVEL_DOWN) {
+        gameState.wrongStreak = 0;
+
+        if (gameState.digitLength > MIN_DIGIT_LENGTH) {
+          gameState.digitLength -= 1;
+          return {
+            changed: true,
+            message: "系统已降低到 " + gameState.digitLength + " 位，继续轻松练习。"
+          };
+        }
+
+        return {
+          changed: false,
+          message: "我们继续从 2 位数字慢慢练习。"
+        };
+      }
+
+      return {
+        changed: false,
+        message: "这次没有答对，没关系，再练一次当前难度。"
+      };
+    }
+
+    async function submitAnswer() {
+      if (gameState.phase !== "answering" || gameState.isPaused || gameState.isWaitingRestChoice) {
+        return;
+      }
+
+      const userAnswer = els.answerInput.value.trim();
+
+      if (!userAnswer) {
+        setMessage(els.gameMessage, "请输入您记住的倒序答案。", "bad");
+        return;
+      }
+
+      const answerTime = Number(((gameState.answerElapsedBeforePause + performance.now() - gameState.answerStartedAt) / 1000).toFixed(2));
+      const isCorrect = userAnswer === gameState.correctAnswer;
+      const recordDigitLength = gameState.digitLength;
+
+      const record = {
+        level: recordDigitLength,
+        digitLength: recordDigitLength,
+        difficultyName: getDifficultyName(recordDigitLength),
+        numberText: gameState.numberText,
+        correctAnswer: gameState.correctAnswer,
+        userAnswer,
+        isCorrect,
+        answerTime,
+        createTime: formatNow()
+      };
+
+      const session = readJson("currentSession");
+      session.records.push(record);
+      session.isPaused = false;
+      saveJson("currentSession", session);
+
+      const difficultyResult = updateAdaptiveDifficulty(isCorrect);
+
+      const progress = normalizeProgress(readJson("gameProgress") || defaultProgress());
+      progress.totalCount = Number(progress.totalCount || 0) + 1;
+
+      if (isCorrect) {
+        progress.correctCount = Number(progress.correctCount || 0) + 1;
+      }
+
+      progress.currentLevel = clampDigitLength(gameState.digitLength);
+      progress.maxLevel = Math.max(Number(progress.maxLevel || MIN_DIGIT_LENGTH), recordDigitLength, gameState.digitLength);
+      progress.lastUpdateTime = formatNow();
+
+      saveJson("gameProgress", progress);
+      renderHome(progress);
+
+      els.answerInput.disabled = true;
+      els.submitAnswerBtn.disabled = true;
+      gameState.phase = "transition";
+
+      setMessage(
+        els.gameMessage,
+        difficultyResult.message,
+        isCorrect ? "ok" : "bad"
+      );
+
+      await syncRecordAndProgress(record, progress);
+
+      const answeredCount = getSessionAnsweredCount();
+
+      if (answeredCount > 0 && answeredCount % REST_REMINDER_COUNT === 0) {
+        showRestBox();
+        return;
+      }
+
+      gameState.nextRoundTimer = setTimeout(startRound, 1000);
+    }
+
+    async function syncRecordAndProgress(record, progress) {
+      try {
+        await apiFetch("/api/game/records", {
+          method: "POST",
+          body: JSON.stringify({
+            sessionId: gameState.sessionId,
+            level: record.level,
+            numberText: record.numberText,
+            correctAnswer: record.correctAnswer,
+            userAnswer: record.userAnswer,
+            isCorrect: record.isCorrect,
+            answerTime: record.answerTime
+          })
+        });
+
+        await apiFetch("/api/game/progress", {
+          method: "PUT",
+          body: JSON.stringify({
+            currentLevel: progress.currentLevel,
+            maxLevel: progress.maxLevel,
+            totalCount: progress.totalCount,
+            correctCount: progress.correctCount
+          })
+        });
+      } catch (err) {
+        setMessage(els.gameMessage, "本地已保存，云端同步暂时失败：" + err.message, "warn");
+      }
+    }
+
+    function showRestBox() {
+      clearGameTimers();
+      gameState.phase = "rest";
+      gameState.isWaitingRestChoice = true;
+
+      els.answerInput.disabled = true;
+      els.submitAnswerBtn.disabled = true;
+      els.numberBox.textContent = "休息一下";
+      els.phaseText.textContent = "您已经完成一组训练。";
+      els.restBox.classList.add("active");
+      setMessage(els.gameMessage, "建议休息片刻，也可以继续训练。", "warn");
+    }
+
+    function hideRestBox() {
+      els.restBox.classList.remove("active");
+      gameState.isWaitingRestChoice = false;
+    }
+
+    function continueAfterRest() {
+      hideRestBox();
+      setMessage(els.gameMessage, "继续训练。", "ok");
+      startRound();
+    }
+
+    function buildLocalReport(session) {
+      const records = session.records || [];
+      const totalCount = records.length;
+      const correctCount = records.filter(record => record.isCorrect).length;
+      const wrongCount = totalCount - correctCount;
+      const accuracy = totalCount ? Number((correctCount / totalCount * 100).toFixed(2)) : 0;
+      const passedLengths = records
+        .filter(record => record.isCorrect)
+        .map(record => Number(record.digitLength || record.level || MIN_DIGIT_LENGTH));
+      const maxLevel = passedLengths.length ? Math.max.apply(null, passedLengths) : 0;
+      const avgTime = totalCount
+        ? Number((records.reduce((sum, record) => sum + Number(record.answerTime || 0), 0) / totalCount).toFixed(2))
+        : 0;
+
+      return {
+        sessionId: session.sessionId,
+        totalCount,
+        correctCount,
+        wrongCount,
+        accuracy,
+        maxLevel,
+        avgTime
+      };
+    }
+
+    async function finishTraining() {
+      clearGameTimers();
+      hideRestBox();
+
+      const session = readJson("currentSession");
+
+      if (!session || !session.records || session.records.length === 0) {
+        await enterStartView();
+        setMessage(els.startMessage, "本次还没有作答记录，未生成训练报告。", "warn");
+        return;
+      }
+
+      let report = buildLocalReport(session);
+
+      try {
+        report = await apiFetch("/api/game/reports", {
+          method: "POST",
+          body: JSON.stringify({sessionId: session.sessionId})
+        });
+      } catch (err) {
+        setMessage(els.gameMessage, "云端报告生成失败，已生成本地报告。", "warn");
+      }
+
+      saveJson("lastReport", {
+        sessionId: report.sessionId,
+        totalCount: report.totalCount,
+        correctCount: report.correctCount,
+        wrongCount: report.wrongCount,
+        accuracy: report.accuracy,
+        maxLevel: report.maxLevel,
+        avgTime: report.avgTime
+      });
+
+      renderReport(report, session.records);
+      showView("reportView");
+    }
+
+    async function exitTraining() {
+      clearGameTimers();
+      hideRestBox();
+      await enterStartView();
+      setMessage(els.startMessage, "已退出本次训练。如需查看结果，请点击“查看最近报告”。", "warn");
+    }
+
+    function getAdvice(accuracy, maxLevel) {
+      if (accuracy >= 80 && maxLevel >= 5) {
+        return "本次训练表现良好，可以继续进行巩固训练。";
+      }
+
+      if (accuracy >= 80) {
+        return "本次训练正确率较高，可以继续保持。";
+      }
+
+      if (accuracy >= 50) {
+        return "记忆表现较稳定，建议继续进行短时记忆训练。";
+      }
+
+      return "本次训练有一定难度，建议从较短数字开始慢慢练习。";
+    }
+
+    function renderReport(report, records) {
+      const maxLength = Number(report.maxLevel || 0);
+
+      els.reportSessionText.textContent = "sessionId：" + report.sessionId;
+      els.reportTotal.textContent = report.totalCount;
+      els.reportCorrect.textContent = report.correctCount;
+      els.reportWrong.textContent = report.wrongCount;
+      els.reportAccuracy.textContent = Number(report.accuracy).toFixed(2) + "%";
+      els.reportMaxLevel.textContent = maxLength > 0 ? maxLength + "位" : "0位";
+      els.reportAvgTime.textContent = Number(report.avgTime).toFixed(2) + "秒";
+      els.reportAdvice.textContent = getAdvice(Number(report.accuracy), maxLength);
+      els.recordDetails.innerHTML = "";
+
+      if (!records || records.length === 0) {
+        els.recordDetails.innerHTML = '<div class="detail-item">暂无作答明细。</div>';
+        return;
+      }
+
+      records.forEach((record, index) => {
+        const digitLength = Number(record.digitLength || record.level || String(record.numberText).length);
+        const item = document.createElement("div");
+
+        item.className = "detail-item";
+        item.innerHTML = [
+          "<strong>第 " + (index + 1) + " 题｜" + getDifficultyName(digitLength) + "（" + digitLength + "位）</strong>",
+          "原始数字：" + record.numberText,
+          "用户答案：" + record.userAnswer,
+          "正确答案：" + record.correctAnswer,
+          "用时：" + Number(record.answerTime).toFixed(2) + "秒",
+          '状态：<span class="' + (record.isCorrect ? "correct" : "wrong") + '">' + (record.isCorrect ? "正确" : "错误") + "</span>"
+        ].join("<br>");
+
+        els.recordDetails.appendChild(item);
+      });
+    }
+
+    async function showLatestReport() {
+      const localReport = readJson("lastReport");
+      const currentSession = readJson("currentSession");
+
+      if (localReport && currentSession && currentSession.sessionId === localReport.sessionId) {
+        renderReport(localReport, currentSession.records || []);
+        showView("reportView");
+        return;
+      }
+
+      try {
+        const report = await apiFetch("/api/game/reports/latest");
+
+        if (!report) {
+          setMessage(els.startMessage, "还没有训练报告，请先完成一次训练。", "warn");
+          return;
+        }
+
+        saveJson("lastReport", {
+          sessionId: report.sessionId,
+          totalCount: report.totalCount,
+          correctCount: report.correctCount,
+          wrongCount: report.wrongCount,
+          accuracy: report.accuracy,
+          maxLevel: report.maxLevel,
+          avgTime: report.avgTime
+        });
+
+        const records = await apiFetch("/api/game/records?sessionId=" + encodeURIComponent(report.sessionId));
+        renderReport(report, records);
+        showView("reportView");
+      } catch (err) {
+        setMessage(els.startMessage, "读取最近报告失败：" + err.message, "bad");
+      }
+    }
+
+    document.querySelectorAll("[data-target]").forEach(button => {
+      button.addEventListener("click", () => {
+        setMessage(els.loginMessage, "", "");
+        setMessage(els.registerMessage, "", "");
+        showView(button.dataset.target);
+      });
+    });
+
+    els.loginForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      setMessage(els.loginMessage, "正在登录，请稍候。", "warn");
+
+      try {
+        const data = await apiFetch("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({
+            username: document.getElementById("loginUsername").value.trim(),
+            password: document.getElementById("loginPassword").value
+          })
+        });
+
+        localStorage.setItem("token", data.token);
+        saveJson("userInfo", data.user);
+        setMessage(els.loginMessage, "", "");
+        await enterStartView();
+      } catch (err) {
+        setMessage(els.loginMessage, err.message, "bad");
+      }
+    });
+
+    els.registerForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      setMessage(els.registerMessage, "正在注册，请稍候。", "warn");
+
+      try {
+        await apiFetch("/api/users", {
+          method: "POST",
+          body: JSON.stringify({
+            username: document.getElementById("registerUsername").value.trim(),
+            password: document.getElementById("registerPassword").value
+          })
+        });
+
+        setMessage(els.registerMessage, "注册成功，请返回登录。", "ok");
+      } catch (err) {
+        setMessage(els.registerMessage, err.message, "bad");
+      }
+    });
+
+    els.startGameBtn.addEventListener("click", startTraining);
+    els.latestReportBtn.addEventListener("click", showLatestReport);
+    els.logoutBtn.addEventListener("click", () => logout(true));
+    els.pauseBtn.addEventListener("click", togglePause);
+    els.submitAnswerBtn.addEventListener("click", submitAnswer);
+    els.finishGameBtn.addEventListener("click", finishTraining);
+    els.exitGameBtn.addEventListener("click", exitTraining);
+    els.continueAfterRestBtn.addEventListener("click", continueAfterRest);
+    els.reportAfterRestBtn.addEventListener("click", finishTraining);
+    els.backHomeBtn.addEventListener("click", enterStartView);
+
+    els.answerInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        submitAnswer();
+      }
+    });
+
+    els.answerInput.addEventListener("input", () => {
+      els.answerInput.value = els.answerInput.value.replace(/\D/g, "");
+    });
+
+    checkLoginOnLoad();
+  </script>
+</body>
+</html>
